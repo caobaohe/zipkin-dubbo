@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Service
+@Service(filter = "tracing")
 @Component
 public class OrderServiceImpl implements OrderService {
 
