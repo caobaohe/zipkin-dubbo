@@ -1,5 +1,6 @@
 package com.cbh.zipkin.dubbo.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.cbh.zipkin.dubbo.OrderService;
 import com.cbh.zipkin.dubbo.model.Order;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Service
 @Component
 public class OrderServiceImpl implements OrderService {
 
