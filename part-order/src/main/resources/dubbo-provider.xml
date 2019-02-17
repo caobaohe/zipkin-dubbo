@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- provider's application name, used for tracing dependency relationship -->
+    <dubbo:application name="part-order-provider"/>
+
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+
+    <!-- use dubbo protocol to export service on port 20880 -->
+    <dubbo:protocol name="dubbo" port="20883"/>
+
+    <!-- service implementation, as same as regular local bean -->
+    <bean id="orderService" class="com.cbh.zipkin.dubbo.service.impl.OrderServiceImpl"/>
+
+    <!-- declare the service interface to be exported -->
+    <!-- 1. 修改 dubbo 服务暴露配置，在 filter chain 中增加 zipkin 的 tracing 过滤器 [filter="tracing"]-->
+    <dubbo:service interface="com.cbh.zipkin.dubbo.OrderService" ref="orderService" filter="tracing"/>
+
+    <!-- 2. zipkin 相关的配置 -->
+    <!-- 使用 OKHttp 来发送 trace 信息到 Zipkin Server。这里的 Zipkin Server 启动在本地 -->
+
+    <bean id="sender" class="zipkin2.reporter.beans.OkHttpSenderFactoryBean">
+        <property name="endpoint" value="http://127.0.0.1:9411/api/v2/spans"/>
+    </bean>
+
+    <bean id="tracing" class="brave.spring.beans.TracingFactoryBean">
+        <property name="localServiceName" value="part-order-service"/>
+        <property name="spanReporter">
+            <bean class="zipkin2.reporter.beans.AsyncReporterFactoryBean">
+                <property name="sender" ref="sender"/>
+                <property name="closeTimeout" value="500"/>
+            </bean>
+        </property>
+        <property name="currentTraceContext">
+            <bean class="brave.spring.beans.CurrentTraceContextFactoryBean">
+                <property name="scopeDecorators">
+                    <bean class="brave.context.slf4j.MDCScopeDecorator" factory-method="create"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
