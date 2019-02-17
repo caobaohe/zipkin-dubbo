@@ -17,12 +17,13 @@
     <bean id="userService" class="com.cbh.zipkin.dubbo.service.impl.UserServiceImpl"/>
 
     <!-- declare the service interface to be exported -->
-    <!-- 1. 修改 dubbo 服务暴露配置，在 filter chain 中增加 zipkin 的 tracing 过滤器 [filter="tracing"]-->
-    <dubbo:service interface="com.cbh.zipkin.dubbo.UserService" ref="userService" filter="tracing"/>
+    <dubbo:service interface="com.cbh.zipkin.dubbo.UserService" ref="userService"/>
 
+
+    <!-- 1. 修改 dubbo 服务暴露配置，在 filter chain 中增加 zipkin 的 tracing 过滤器 [filter="tracing"]-->
+    <dubbo:provider filter="tracing"/>
     <!-- 2. zipkin 相关的配置 -->
     <!-- 使用 OKHttp 来发送 trace 信息到 Zipkin Server。这里的 Zipkin Server 启动在本地 -->
-
     <bean id="sender" class="zipkin2.reporter.beans.OkHttpSenderFactoryBean">
         <property name="endpoint" value="http://127.0.0.1:9411/api/v2/spans"/>
     </bean>
