@@ -13,6 +13,7 @@
         <module>part-common</module>
         <module>part-user</module>
         <module>part-order</module>
+        <module>part-auth</module>
     </modules>
 
 

@@ -5,4 +5,6 @@ import com.cbh.zipkin.dubbo.model.User;
 public interface UserService {
 
     User getUser(String name);
+
+    User getUserOrder(String name);
 }
